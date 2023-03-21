@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const nunjucks = require('nunjucks');
+var session = require('express-session')
 
 const indexRouter = require('./routes/index');
 
@@ -13,6 +14,11 @@ nunjucks.configure('views', {
     autoescape: true,
     express: app,
 });
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+  }))
 
 app.use(logger('dev'));
 app.use(express.json());

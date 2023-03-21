@@ -2,14 +2,7 @@
 {% block  content %}
 <body>
 <form action="/new" method="post" class="form">
-<li>
-    <label for="author">Författare</label>
-    <select name="author" id="author">
-    {% for user in users %}
-        <option value="{{ user.id }}">{{ user.name }}</option>
-    {% endfor %}
-    </select>
-    </li>
+<ul>
     <li>
     <label for="title">Titel</label>
     <input type="text" name="title" id="title">
@@ -19,6 +12,7 @@
     <textarea name="content" id="content" cols="30" rows="10"></textarea>
     <button type="submit">Skicka</button>
     </li>
+</ul>
 </form>
 </body>
 {% endblock %}

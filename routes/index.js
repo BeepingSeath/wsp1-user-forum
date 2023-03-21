@@ -17,5 +17,49 @@ router.get('/', async function (req, res) {
         title: 'Forum',
     });
 });
+router.get('/login', function (req, res, next) {
+    res.render('login.njk', {
+        title: 'Login ALC',
+    });
+});
+router.post('/login', async function (req, res, next) {
+    const { username, password } = req.body;
+    const errors = [];
+    
+    if (username === '') {
+        //console.log('Username is Required');
+        errors.push('Username is Required');
+    } else {
+    }
+    
+    if (password === '') {
+        //console.log('Password is Required');
+        errors.push('Password is Required');
+    }
+    if (errors.length > 0) {
+        return res.json(errors);
+    }
+    const [users] = await promisePool.query('SELECT * FROM sb26users WHERE name = ?', [username],);
+    if(users.length > 0) {
+    bcrypt.compare(password, users[0].password, function (err, result) {
+        if (result === true) {
+            req.session.loggedin = true;
+            req.session.userid = users[0].id;
+            return res.redirect('/profile');
+        } else {
+            return res.json('Invalid username or password');
+        }
+    });
+} else {
+    return res.redirect("/login");
+}
+});
+router.get('/new', async function (req, res, next) {
+    const [users] = await promisePool.query("SELECT * FROM srb26users");
+    res.render('new.njk', {
+        title: 'Nytt inlägg',
+        users,
+    });
+});
 
 module.exports = router;

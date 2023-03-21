@@ -55,10 +55,26 @@ body {
         width: 4rem;
     }
 }
+.show {
+    display: flex;
+}
+
+.hide {
+    display: none;
+}
 .post {
     background-color: #FFF5E4;
     border-style: solid;
     border-width: 0.2rem;
     border-radius: 10px;
     padding: 1rem;
+}
+.form {
+    border-style: solid;
+    border-width: 0.2rem;
+    list-style: none;
+    padding: 1rem;
+    padding-inline: 10rem;
+    display:flex;
+    flex-direction: column;
 }
