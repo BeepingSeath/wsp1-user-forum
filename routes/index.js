@@ -67,7 +67,7 @@ router.post('/new', async function (req, res, next) {
     const {title, content } = req.body;
 
     // Skapa en ny författare om den inte finns men du behöver kontrollera om användare finns!
-    let [user] = await promisePool.query('SELECT * FROM sb26users WHERE id = ?', [userId]);
+    let [user] = await promisePool.query('SELECT * FROM sb26users WHERE id = ?', [req.session.userid]);
 
     // user.insertId bör innehålla det nya ID:t för författaren
     console.log(user);
