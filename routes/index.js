@@ -19,7 +19,7 @@ router.get('/', async function (req, res) {
 });
 router.get('/login', function (req, res, next) {
     res.render('login.njk', {
-        title: 'Login ALC',
+        title: 'Login',
     });
 });
 router.post('/login', async function (req, res, next) {
@@ -57,9 +57,25 @@ router.post('/login', async function (req, res, next) {
 router.get('/new', async function (req, res, next) {
     const [users] = await promisePool.query("SELECT * FROM srb26users");
     res.render('new.njk', {
-        title: 'Nytt inlägg',
+        title: 'New Post',
         users,
     });
+});
+router.post('/new', async function (req, res, next) {
+    console.log(req.body)
+    const { author, title, content } = req.body;
+
+    // Skapa en ny författare om den inte finns men du behöver kontrollera om användare finns!
+    let [user] = await promisePool.query('SELECT * FROM sb26users WHERE id = 1', /*[author]*/);
+
+    // user.insertId bör innehålla det nya ID:t för författaren
+    console.log(user);
+    const userId = user.insertId || user[0].id;
+
+    // kör frågan för att skapa ett nytt inlägg
+    const [rows] = await promisePool.query('INSERT INTO sb26forum (authorId, title, content) VALUES (?, ?, ?)', [userId, title, content]);
+    
+    res.redirect('/'); 
 });
 
 module.exports = router;

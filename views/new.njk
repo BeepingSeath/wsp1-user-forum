@@ -1,18 +1,17 @@
 {% extends "layout.njk" %}
 {% block  content %}
 <body>
+<h1>{{title}}</h1>
 <form action="/new" method="post" class="form">
-<ul>
-    <li>
+
     <label for="title">Titel</label>
     <input type="text" name="title" id="title">
-    </li>
-    <li>
+
+
     <label for="content">Innehåll</label>
     <textarea name="content" id="content" cols="30" rows="10"></textarea>
     <button type="submit">Skicka</button>
-    </li>
-</ul>
+
 </form>
 </body>
 {% endblock %}
