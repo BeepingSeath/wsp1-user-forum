@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -63,10 +64,10 @@ router.get('/new', async function (req, res, next) {
 });
 router.post('/new', async function (req, res, next) {
     console.log(req.body)
-    const { author, title, content } = req.body;
+    const {title, content } = req.body;
 
     // Skapa en ny författare om den inte finns men du behöver kontrollera om användare finns!
-    let [user] = await promisePool.query('SELECT * FROM sb26users WHERE id = 1', /*[author]*/);
+    let [user] = await promisePool.query('SELECT * FROM sb26users WHERE id = ?', [userId]);
 
     // user.insertId bör innehålla det nya ID:t för författaren
     console.log(user);
@@ -76,6 +77,12 @@ router.post('/new', async function (req, res, next) {
     const [rows] = await promisePool.query('INSERT INTO sb26forum (authorId, title, content) VALUES (?, ?, ?)', [userId, title, content]);
     
     res.redirect('/'); 
+});
+router.get('/crypt/:password', function (req, res, next) {
+    bcrypt.hash(req.params.password, 10, function (err, hash) {
+        // Store hash in your password DB.
+        return res.json({ hash });
+    });
 });
 
 module.exports = router;
