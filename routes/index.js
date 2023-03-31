@@ -85,4 +85,40 @@ router.get('/crypt/:password', function (req, res, next) {
     });
 });
 
+router.get('/register', async function (req, res, next){
+    res.render('register.njk', {
+        title: 'Register',
+    });
+});
+router.post('/register', async function (req, res, next){
+    const { username, password, passwordConfirmation } = req.body;
+    const errors = [];
+    
+    if (username === '') {
+        errors.push('Username is Required');
+    } else {
+    }
+
+    if (password === '') {
+        errors.push('Password is Required');
+    }
+    if (password !== passwordConfirmation) {
+        errors.push('Passwords do not match');
+    }
+    const [userCheck] = await promisePool.query('SELECT name FROM sb26users WHERE name = ?',[username],);
+    if (userCheck.length > 0){
+        errors.push('Username is already taken');
+    }
+    if (errors.length > 0) {
+        return res.json([errors]);
+    } else {
+        bcrypt.hash(password, 10, async function (err, hash) {
+            const [newUser] = await promisePool.query('INSERT INTO sb26users (name, password) VALUES (?, ?)', [username, hash])
+            return res.redirect('/login');
+        });
+        
+
+    }
+});
+
 module.exports = router;
