@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
+var validator = require('validator');
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -104,6 +105,12 @@ router.post('/register', async function (req, res, next){
     }
     if (password !== passwordConfirmation) {
         errors.push('Passwords do not match');
+    }
+    if (validator.isAlphanumeric(username , 'en-US') == false){
+        errors.push('Username is illegal');
+    }
+    if (errors.length > 0) {
+        return res.json([errors]);
     }
     const [userCheck] = await promisePool.query('SELECT name FROM sb26users WHERE name = ?',[username],);
     if (userCheck.length > 0){
