@@ -72,6 +72,9 @@ router.post('/new', async function (req, res, next) {
 
     // user.insertId bör innehålla det nya ID:t för författaren
     console.log(user);
+    if (req.session.loggedin == false){
+        return res.json('Need to be logged in to post.');
+    }
     const userId = user.insertId || user[0].id;
 
     // kör frågan för att skapa ett nytt inlägg
@@ -126,6 +129,49 @@ router.post('/register', async function (req, res, next){
         
 
     }
+});
+router.get('/profile', async function (req, res, next) {
+
+    if (req.session.loggedin === undefined) {
+        
+        return res.status(401).send('Access Denied');
+    } else {
+    const [username] = await promisePool.query('SELECT * FROM sb26users WHERE id = ?', [req.session.userid],);
+    res.render('profile.njk', {
+        title: 'Profile',
+        username: username[0].name,
+    });}
+});
+router.get('/delete', async function (req, res, next) {
+    if (req.session.loggedin === true) {
+        req.session.loggedin = false;
+        req.session.userid = null;
+        await promisePool.query('DELETE FROM sb26users WHERE id = ?', [req.session.userid],);
+        return res.redirect('/login');
+    }
+});
+router.get('/logout', function (req, res, next){
+    req.session.loggedin = false
+    req.session.userid = null;
+        return res.redirect('/login')
+    
+});
+router.post('/logout', async function (req, res, next){
+    if (req.session.loggedin === undefined) {
+        
+        return res.status(401).send('Access Denied');
+    }
+    else {
+        req.session.loggedin=undefined;
+        return res.redirect('/')
+    }
+});
+
+router.get('/crypt/:password', function (req, res, next) {
+    bcrypt.hash(req.params.password, 10, function (err, hash) {
+        // Store hash in your password DB.
+        return res.json({ hash });
+    });
 });
 
 module.exports = router;
